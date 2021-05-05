@@ -1,4 +1,5 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
@@ -21,6 +22,18 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+commands = {}
+
+for k, v in {
+    ('n', 'north'): 'n_to',
+    ('s', 'south'): 's_to',
+    ('e', 'east'): 'e_to',
+    ('w', 'west'): 'w_to',
+    ('q', 'quit', 'exit', 'leave'): 'q'
+}.items():
+    for key in k:
+        commands[key] = v
+
 
 # Link rooms together
 
@@ -38,6 +51,8 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
+name = input("Greetings Adventurer! What is your name?: ")
+new_player = Player(name, room['outside'])
 
 # Write a loop that:
 #
@@ -49,3 +64,10 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+selection = ""
+print(new_player)
+while(selection != 'q'):
+    selection = str.lower(input("Which direction will you go?::  "))
+    selection = commands[selection]
+    if selection != 'q':
+        print(new_player.move(selection))
