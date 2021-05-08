@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 
 # Declare all the rooms
 
@@ -29,7 +30,11 @@ for k, v in {
     ('s', 'south'): 's_to',
     ('e', 'east'): 'e_to',
     ('w', 'west'): 'w_to',
-    ('q', 'quit', 'exit', 'leave'): 'q'
+    ('q', 'quit', 'exit', 'leave'): 'q',
+    ('get', 'pickup', 'take'): 'get',
+    ('drop', 'leave'): 'drop',
+    ('inventory', 'bag', 'items', 'inv', 'i'): 'inv',
+    ('go', 'move', 'travel'): 'go'
 }.items():
     for key in k:
         commands[key] = v
@@ -45,6 +50,11 @@ room['overlook'].s_to = room['foyer']
 room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
+
+room['outside'].__items__ = [
+    Item('Candy', "A tasty sweet"),
+    Item('key', 'opens the special lock')
+]
 
 #
 # Main
@@ -67,7 +77,18 @@ new_player = Player(name, room['outside'])
 selection = ""
 print(new_player)
 while(selection != 'q'):
-    selection = str.lower(input("Which direction will you go?::  "))
-    selection = commands[selection]
-    if selection != 'q':
-        print(new_player.move(selection))
+    selection = str.lower(input("What do you do?::  "))
+    selection = selection.split()
+    command = commands.get(selection[0], "")
+    if command == 'go':
+        command = commands.get(selection[1], "")
+    if command == 'q':
+        print("Thank you for playing!")
+    elif command == 'inv':
+        print(new_player.viewInventory())
+    elif command == 'get':
+        print(new_player.get(selection[1]))
+    elif command == 'drop':
+        print(new_player.drop(selection[1]))
+    else:
+        print(new_player.move(command))
